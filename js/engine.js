@@ -18,22 +18,19 @@ class Move {
         let score = 0;
 
         switch(this.piece2.toLowerCase()) {
-            case "p":
-                score += 1;
-                break;
-            case "n":
-                score += 3;
-                break;
-            case "b":
-                score += 3;
-                break;
-            case "r":
-                score += 5;
-                break;
-            case "q":
-                score += 9;
-                break;
+            case "p": score += 1; break;
+            case "n": score += 3; break;
+            case "b": score += 3; break;
+            case "r": score += 5; break;
+            case "q": score += 9; break;
         }
+
+        /*if(this.piece2.toLowerCase != " ") {
+            switch(this.piece1.toLowerCase()) {
+                case "p": score += 3; break;
+                default: score += 2; break;
+            }
+        }*/
 
         return score;
     }
@@ -76,12 +73,12 @@ class Engine {
             case "p":
                 let p_unverified_coords = []; // [X, Y, EN PASSANT (0 OR 1)]
                 if(!color) {
-                    p_unverified_coords.push([x-1,y,0]);
                     if(x==6 && this.board[x-1][y] == " ") p_unverified_coords.push([x-2,y,0]);
+                    p_unverified_coords.push([x-1,y,0]);
                     // TODO: en passant if
                 } else {
-                    p_unverified_coords.push([x+1,y]);
                     if(x==1 && this.board[x+1][y] == " ") p_unverified_coords.push([x+2,y,0]);
+                    p_unverified_coords.push([x+1,y]);
                     // TODO: en passant if
                 }
                 p_unverified_coords.forEach(arr => {
@@ -336,17 +333,22 @@ class Engine {
         return moves;
     }
     
-    nextMove() {
+    nextMove(board) {
         let moves = this.allPossibleMoves();
-        moves.sort((a, b) => b.score - a.score);
-        console.log(moves);
-        return moves;
+        moves.sort(function(a, b) { 
+            var dScore = b.score - a.score; // sort by score
+            if(dScore) return dScore;
+
+            var dCenter = Math.abs(4-a.pos1[0]) + Math.abs(3-a.pos1[1]) - Math.abs(4-b.pos1[0]) - Math.abs(3-b.pos1[1]); // sort by distance from the center
+            return dCenter;
+        });
+        this.board = this.generateBoard(moves[0]);
+        return this.board;
     }
 }
 
-//let board = [["LR","N","B","Q","K","B","N","RR"],["P","P","P","P","P","P","P","P",],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],["p","p","p","p","p","p","p","p",],["lr","n","b","q","k","b","n","rr"]];
-let board = [[" "," "," ","b"," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," ","Q"," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "]];
+let board = [["R","N","B","Q","K","B","N","R"],["P","P","P","P","P","P","P","P",],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],["p","p","p","p","p","p","p","p",],["r","n","b","q","k","b","n","r"]];
+//let board = [[" "," "," ","b"," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," ","Q"," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "],[" "," "," "," "," "," "," "," "]];
 board.forEach(line => console.log(line.toString()));
-const engine = new Engine(board,1);
-let moves = engine.nextMove();
-engine.generateBoard(moves[0]).forEach(line => console.log(line.toString()));
+const engine = new Engine(board,0);
+board = engine.nextMove(board).forEach(line => console.log(line.toString()));
