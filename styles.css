@@ -1,0 +1,183 @@
+:root {
+    --color1: #343a40;
+    --color2: #f8f9fa;
+    --color3: #007bff;
+
+    --fullwidth: 100%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--color1);
+}
+
+.container {
+    position: absolute;
+    background: var(--color1);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container::after {
+}
+
+.header {
+    position: relative;
+    width: 100%;
+    height: 10rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title {
+    font-family: "Abril Fatface", cursive;
+    font-weigh: bold;
+    font-size: 5rem;
+    color: var(--color3);
+    margin-left: -1.2rem;
+}
+
+.chess-board {
+    position: relative;
+    width: 38rem;
+    height: 38rem;
+    background: var(--color2);
+    margin-top: 3rem;
+    z-index: 1;
+}
+
+.cell-light {
+    box-sizing: border-box;
+    position: absolute;
+    width: 4.75rem;
+    height: 4.75rem;
+    background: var(--color2);
+    border: 1px solid var(--color1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cell-dark {
+    box-sizing: border-box;
+    position: absolute;
+    width: 4.75rem;
+    height: 4.75rem;
+    background: var(--color3);
+    border: 1px solid var(--color1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 12rem;
+}
+
+a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+}
+
+.button {
+    background-color: var(--color3);
+    color: var(--color2);
+    cursor: pointer;
+    line-height: 0;
+    border: 0;
+    border-radius: 5px;
+    font-family: "Roboto", cursive;
+    font-weight: bold;
+    font-size: 2rem;
+    padding: 3rem 10rem;
+    margin: 1rem;
+    width: 100%;
+}
+
+.button:hover {
+    filter: brightness(85%);
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+label {
+    display: inline-block;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    color: var(--color2);
+    margin: 10px;
+    font-family: "Roboto", cursive;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+input[type="radio"]:checked + label {
+    color: var(--color3);
+    background-color: var(--color2);
+}
+
+.button-difficulty {
+    background-color: var(--color3);
+    color: var(--color2);
+    line-height: 0;
+    border: 0;
+    border-radius: 5px;
+    font-family: "Roboto", cursive;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 2rem 6rem;
+    width: 100%;
+    margin-top: 6rem;
+    margin-bottom: 1rem;
+}
+
+.button-ok {
+    background-color: var(--color2);
+    color: var(--color1);
+    line-height: 0;
+    border: 0;
+    border-radius: 5px;
+    font-family: "Roboto", cursive;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 1.7rem 6rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.button-voltar {
+    background-color: var(--color2);
+    color: var(--color1);
+    line-height: 0;
+    border: 0;
+    border-radius: 5px;
+    font-family: "Roboto", cursive;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 1.7rem 6rem;
+    cursor: pointer;
+    margin-top: -4rem;
+    margin-left: 90rem;
+}
+
+.content {
+    width: 100%;
+    height: 100%;
+    display: contents;
+}
