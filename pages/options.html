@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess</title>
+
+    <link rel="stylesheet" type="text/css" href="../styles.css" media="screen" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">Chess</div>
+        </div>
+        <div class="radio-container">
+            <button class="button-difficulty">
+                <label>Selecione a dificuldade:</label>
+            </button>
+            <div class="radio-options">
+                <div>
+                    <input type="radio" id="easy" name="difficulty" value="easy">
+                    <label for="easy">Fácil</label>
+                </div>
+                <div>
+                    <input type="radio" id="medium" name="difficulty" value="medium" checked>
+                    <label for="medium">Média</label>
+                </div>
+                <div>
+                    <input type="radio" id="hard" name="difficulty" value="hard">
+                    <label for="hard">Difícil</label>
+                </div>
+            </div>
+            <a href="/pages/index.html">
+                <button class="button-ok">
+                    Ok
+                </button>
+            </a>
+        </div>
+        <!-- <img class="bgImg" src="../assets/darkRook.png" alt="Chess-background"> -->
+    </div>
+    <script src="../main.js"></script>
+</body>
+</html>
