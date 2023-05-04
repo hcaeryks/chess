@@ -37,5 +37,5 @@ function drop(event) {
 
 // Função que retorna a string 
 function getImageUrl(pieceId) {
-    return `../assets/${pieceId}.png`;
+    return `assets/${pieceId}.png`;
 }
