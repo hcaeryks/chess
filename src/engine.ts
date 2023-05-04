@@ -1,12 +1,12 @@
 class Move {
     public piece1:string;
     public piece2:string;
-    public pos1:string;
-    public pos2:any[];
+    public pos1:number[];
+    public pos2:number[];
     public special_move:string;
     public score:number;
 
-    constructor(piece1:string, pos1:string, piece2:string, pos2:any[], special_move:string) {
+    constructor(piece1:string, pos1:number[], piece2:string, pos2:number[], special_move:string) {
         this.piece1 = piece1; // piece being moved
         this.piece2 = piece2; // piece being taken (can be null)
         this.pos1 = pos1; // position of piece1 in the board [x,y]
@@ -47,18 +47,18 @@ class Engine {
     public board:string[][];
     public color:number;
 
-    constructor(board, color) {
+    constructor(board: string[][], color: number) {
         this.board = board; // 8x8 matrix
         this.color = color; // 0 = white, 1 = black
     }
 
-    getColor(letter) {
+    getColor(letter: string) {
         if(letter == " ") return null;
         return (letter == letter.toUpperCase() ? 1 : 0);
     }
 
 
-    generateBoard(move) {
+    generateBoard(move: Move) {
         let new_board = this.board;
         new_board[move.pos1[0]][move.pos1[1]] = " ";
         new_board[move.pos2[0]][move.pos2[1]] = move.piece1;
@@ -67,7 +67,7 @@ class Engine {
     }
 
     // PLEASE, CLEAN THIS CODE, MAYBE CREATE SEPARATE FUNCTION FOR BISHOP, ROOK AND QUEEN (navigate diag / ho / ve ??)
-    searchPieceMoves(pos) {
+    searchPieceMoves(pos: number[]) {
         let moves:any[]=[];
         let piece = this.board[pos[0]][pos[1]];
         let color = this.getColor(piece);
@@ -339,7 +339,7 @@ class Engine {
         return moves;
     }
     
-    nextMove(board) {
+    nextMove(board: string[][]) {
         let moves = this.allPossibleMoves();
         moves.sort(function(a, b) { 
             var dScore = b.score - a.score; // sort by score
