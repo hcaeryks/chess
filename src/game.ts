@@ -21,6 +21,12 @@ class Game {
         this.playingAs = playingAs;
     }
 
+    startFromDifferentPosition(FEN: string, playingAs: string) {
+        this.FEN = new StructFEN(FEN);
+        this.board = FENToArray(FEN);
+        this.playingAs = playingAs;
+    }
+
     /* essa parte deveria estar no front end, mas vou deixar aqui pra caso queiram usar
     
     public getFlippedBoard() {
@@ -140,18 +146,20 @@ function isChecked(board: string[][], kingColor: string): boolean {
 }
 
 function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
-    let board: string[][] = FENToArray(FEN.value);
+    let board: string[][];
     let pieceMoves: number[][];
     let moves: StructFEN[] = [];
+    let nextColor: string = FEN.next == "w" ? "b" : "w";
     for(let x = 0; x < 8; x++) {
         for(let y = 0; y < 8; y++) {
+            board = FENToArray(FEN.value);
             if(getPieceColor(board[x][y]) == FEN.next) {
                 pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x,y]);
                 moves = moves.concat(pieceMoves.map(v => {
-                    let futureBoard: string[][] = board.map(a => {return {...a}});
-                    futureBoard[v[0]][v[1]] = futureBoard[x][y];
-                    futureBoard[x][y] = ' ';
-                    return new StructFEN(ArrayToFEN(futureBoard));
+                    board = FENToArray(FEN.value);
+                    board[v[0]][v[1]] = board[x][y];
+                    board[x][y] = ' ';
+                    return new StructFEN(ArrayToFEN(board)+" "+nextColor);
                 }));
                 //moves = moves.concat(pieceMoves.map(v => new Move(board[x][y], [x,y], v)));
             }
@@ -357,6 +365,3 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
         return [];
     }
 }
-
-let game = new Game("w");
-console.log(generateNextPossiblePositions(game.FEN));

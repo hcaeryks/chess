@@ -16,6 +16,11 @@ class Game {
         this.board = FENToArray(this.initialStatus);
         this.playingAs = playingAs;
     }
+    startFromDifferentPosition(FEN, playingAs) {
+        this.FEN = new StructFEN(FEN);
+        this.board = FENToArray(FEN);
+        this.playingAs = playingAs;
+    }
 }
 // https://www.chess.com/terms/fen-chess
 class StructFEN {
@@ -117,18 +122,20 @@ function isChecked(board, kingColor) {
     return true;
 }
 function generateNextPossiblePositions(FEN) {
-    let board = FENToArray(FEN.value);
+    let board;
     let pieceMoves;
     let moves = [];
+    let nextColor = FEN.next == "w" ? "b" : "w";
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {
+            board = FENToArray(FEN.value);
             if (getPieceColor(board[x][y]) == FEN.next) {
                 pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x, y]);
                 moves = moves.concat(pieceMoves.map(v => {
-                    let futureBoard = board.map(a => { return { ...a }; });
-                    futureBoard[v[0]][v[1]] = futureBoard[x][y];
-                    futureBoard[x][y] = ' ';
-                    return new StructFEN(ArrayToFEN(futureBoard));
+                    board = FENToArray(FEN.value);
+                    board[v[0]][v[1]] = board[x][y];
+                    board[x][y] = ' ';
+                    return new StructFEN(ArrayToFEN(board) + " " + nextColor);
                 }));
                 //moves = moves.concat(pieceMoves.map(v => new Move(board[x][y], [x,y], v)));
             }
@@ -349,5 +356,3 @@ function generatePossibleMovesForPiece(FEN, board, location) {
         return [];
     }
 }
-let game = new Game("w");
-console.log(generateNextPossiblePositions(game.FEN));

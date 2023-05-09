@@ -1,15 +1,31 @@
-function minimax(board: string[][], depth: number, aiColor: string, color: string) {
+function minimax(board: StructFEN, depth: number, aiColor: string, color: string) {
     let value: number = 0;
     let nextColor: string = color == "b" ? "w" : "b";
     let enemy: string = aiColor == "b" ? "w" : "b";
-    if(depth == 0) return getMaterial(board, aiColor) - getMaterial(board, enemy);
+    let possibilities: StructFEN[];
+    if(depth == 0) return getMaterial(FENToArray(board.value), color) - getMaterial(FENToArray(board.value), nextColor);
     else if(aiColor != color) {
-        value = Number.MAX_SAFE_INTEGER;
-        
+        value = 1000;
+        possibilities = generateNextPossiblePositions(board);
+        possibilities.forEach(possibility => value = Math.min(value, minimax(possibility, depth-1, aiColor, nextColor)));
         return value;
     } else {
-        value = Number.MIN_SAFE_INTEGER;
-
+        value = -1000;
+        possibilities = generateNextPossiblePositions(board);
+        possibilities.forEach(possibility => value = Math.max(value, minimax(possibility, depth-1, aiColor, nextColor)));
         return value;
     }
 }
+
+function getNextPosition(board: StructFEN, depth: number): StructFEN {
+    let possiblePositions: StructFEN[] = generateNextPossiblePositions(board);
+    let positionStrength: number[] = [];
+    let i: number = 0;
+    possiblePositions.forEach(position => {positionStrength[i] = minimax(position, depth, position.next, position.next); i++;});
+    return depth % 2 == 0 ? possiblePositions[positionStrength.indexOf(Math.min.apply(Math, positionStrength))] : possiblePositions[positionStrength.indexOf(Math.max.apply(Math, positionStrength))]   
+}
+
+let game = new Game("w");
+game.startFromDifferentPosition("r3k2r/pbpp1pp1/1pn1p2p/4P3/1b1P1q2/3B1N2/PPP1NPPP/R2Q1RK1 w - - 1 1", "b");
+console.log(FENToArray(game.FEN.value));
+console.log(FENToArray(getNextPosition(game.FEN, 2).value));
