@@ -149,41 +149,42 @@ function generatePossibleMovesForPiece(FEN, board, location) {
     if (color == FEN.next) {
         let unverified_moves = [];
         let moves = [];
+        let c1 = false, c2 = false, c3 = false, c4 = false, c5 = false, c6 = false, c7 = false, c8 = false;
         switch (piece.toUpperCase()) {
             case 'R':
                 for (let i = 1;; i++) {
-                    let move = [location[0] + i, location[1]];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (c1 && c2 && c3 && c4)
+                        break;
+                    let d1 = [location[0] + i, location[1]];
+                    let d2 = [location[0] - i, location[1]];
+                    let d3 = [location[0], location[1] + i];
+                    let d4 = [location[0], location[1] - i];
+                    if (!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ")
+                        unverified_moves.push(d1);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d1);
+                        c1 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] - i, location[1]];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ")
+                        unverified_moves.push(d2);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d2);
+                        c2 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0], location[1] + i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ")
+                        unverified_moves.push(d3);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d3);
+                        c3 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0], location[1] - i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ")
+                        unverified_moves.push(d4);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d4);
+                        c4 = true;
                         break;
                     }
                 }
@@ -200,112 +201,108 @@ function generatePossibleMovesForPiece(FEN, board, location) {
                 break;
             case 'B':
                 for (let i = 1;; i++) {
-                    let move = [location[0] + i, location[1] + i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (c1 && c2 && c3 && c4)
+                        break;
+                    let d1 = [location[0] + i, location[1] + i];
+                    let d2 = [location[0] + i, location[1] - i];
+                    let d3 = [location[0] - i, location[1] + i];
+                    let d4 = [location[0] - i, location[1] - i];
+                    if (!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ")
+                        unverified_moves.push(d1);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d1);
+                        c1 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] + i, location[1] - i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ")
+                        unverified_moves.push(d2);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d2);
+                        c2 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] - i, location[1] + i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ")
+                        unverified_moves.push(d3);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d3);
+                        c3 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] - i, location[1] - i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ")
+                        unverified_moves.push(d4);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d4);
+                        c4 = true;
                         break;
                     }
                 }
                 break;
             case 'Q':
                 for (let i = 1;; i++) {
-                    let move = [location[0] + i, location[1]];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (c1 && c2 && c3 && c4 && c5 && c6 && c7 && c8)
+                        break;
+                    let d1 = [location[0] + i, location[1]];
+                    let d2 = [location[0] - i, location[1]];
+                    let d3 = [location[0], location[1] + i];
+                    let d4 = [location[0], location[1] - i];
+                    let d5 = [location[0] + i, location[1] + i];
+                    let d6 = [location[0] + i, location[1] - i];
+                    let d7 = [location[0] - i, location[1] + i];
+                    let d8 = [location[0] - i, location[1] - i];
+                    if (!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ")
+                        unverified_moves.push(d1);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d1);
+                        c1 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] - i, location[1]];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ")
+                        unverified_moves.push(d2);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d2);
+                        c2 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0], location[1] + i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ")
+                        unverified_moves.push(d3);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d3);
+                        c3 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0], location[1] - i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ")
+                        unverified_moves.push(d4);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d4);
+                        c4 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] + i, location[1] + i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d5) && getPieceColor(board[d5[0]][d5[1]]) == " ")
+                        unverified_moves.push(d5);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d5);
+                        c5 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] + i, location[1] - i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d6) && getPieceColor(board[d6[0]][d6[1]]) == " ")
+                        unverified_moves.push(d6);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d6);
+                        c6 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] - i, location[1] + i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d7) && getPieceColor(board[d7[0]][d7[1]]) == " ")
+                        unverified_moves.push(d7);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d7);
+                        c7 = true;
                         break;
                     }
-                }
-                for (let i = 1;; i++) {
-                    let move = [location[0] - i, location[1] - i];
-                    if (!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ")
-                        unverified_moves.push(move);
+                    if (!isOutOfBounds(d8) && getPieceColor(board[d8[0]][d8[1]]) == " ")
+                        unverified_moves.push(d8);
                     else {
-                        unverified_moves.push(move);
+                        unverified_moves.push(d8);
+                        c8 = true;
                         break;
                     }
                 }

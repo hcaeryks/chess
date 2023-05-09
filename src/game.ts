@@ -174,41 +174,23 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
     if(color == FEN.next) {
         let unverified_moves: number[][] = [];
         let moves: number[][] = [];
+        let c1: boolean = false, c2: boolean = false, c3: boolean = false, c4: boolean = false, c5: boolean = false, c6: boolean = false, c7: boolean = false, c8: boolean = false;
         switch(piece.toUpperCase()) {
             case 'R':
                 for(let i = 1;; i++) {
-                    let move: number[] = [location[0]+i,location[1]];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]-i,location[1]];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                    
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0],location[1]+i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                    
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0],location[1]-i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
+                    if(c1 && c2 && c3 && c4) break;
+                    let d1: number[] = [location[0]+i,location[1]];
+                    let d2: number[] = [location[0]-i,location[1]];
+                    let d3: number[] = [location[0],location[1]+i];
+                    let d4: number[] = [location[0],location[1]-i];
+                    if(!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
+                    else { unverified_moves.push(d1); c1 = true; break; }
+                    if(!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
+                    else { unverified_moves.push(d2); c2 = true; break; }
+                    if(!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
+                    else { unverified_moves.push(d3); c3 = true; break; }
+                    if(!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
+                    else { unverified_moves.push(d4); c4 = true; break; }
                 }
                 break;
             case 'N':
@@ -223,108 +205,48 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
                 break;
             case 'B':
                 for(let i = 1;; i++) {
-                    let move: number[] = [location[0]+i,location[1]+i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]+i,location[1]-i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                    
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]-i,location[1]+i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                    
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]-i,location[1]-i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
+                    if(c1 && c2 && c3 && c4) break;
+                    let d1: number[] = [location[0]+i,location[1]+i];
+                    let d2: number[] = [location[0]+i,location[1]-i];
+                    let d3: number[] = [location[0]-i,location[1]+i];
+                    let d4: number[] = [location[0]-i,location[1]-i];
+                    if(!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
+                    else { unverified_moves.push(d1); c1 = true; break; }
+                    if(!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
+                    else { unverified_moves.push(d2); c2 = true; break; }
+                    if(!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
+                    else { unverified_moves.push(d3); c3 = true; break; }
+                    if(!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
+                    else { unverified_moves.push(d4); c4 = true; break; }
                 }
                 break;
             case 'Q':
                 for(let i = 1;; i++) {
-                    let move: number[] = [location[0]+i,location[1]];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]-i,location[1]];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                    
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0],location[1]+i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                    
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0],location[1]-i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]+i,location[1]+i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]+i,location[1]-i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                    
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]-i,location[1]+i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
-                    
-                }
-                for(let i = 1;; i++) {
-                    let move: number[] = [location[0]-i,location[1]-i];
-                    if(!isOutOfBounds(move) && getPieceColor(board[move[0]][move[1]]) == " ") unverified_moves.push(move);
-                    else {
-                        unverified_moves.push(move);
-                        break;
-                    }
+                    if(c1 && c2 && c3 && c4 && c5 && c6 && c7 && c8) break;
+                    let d1: number[] = [location[0]+i,location[1]];
+                    let d2: number[] = [location[0]-i,location[1]];
+                    let d3: number[] = [location[0],location[1]+i];
+                    let d4: number[] = [location[0],location[1]-i];
+                    let d5: number[] = [location[0]+i,location[1]+i];
+                    let d6: number[] = [location[0]+i,location[1]-i];
+                    let d7: number[] = [location[0]-i,location[1]+i];
+                    let d8: number[] = [location[0]-i,location[1]-i];
+                    if(!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
+                    else { unverified_moves.push(d1); c1 = true; break; }
+                    if(!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
+                    else { unverified_moves.push(d2); c2 = true; break; }
+                    if(!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
+                    else { unverified_moves.push(d3); c3 = true; break; }
+                    if(!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
+                    else { unverified_moves.push(d4); c4 = true; break; }
+                    if(!isOutOfBounds(d5) && getPieceColor(board[d5[0]][d5[1]]) == " ") unverified_moves.push(d5);
+                    else { unverified_moves.push(d5); c5 = true; break; }
+                    if(!isOutOfBounds(d6) && getPieceColor(board[d6[0]][d6[1]]) == " ") unverified_moves.push(d6);
+                    else { unverified_moves.push(d6); c6 = true; break; }
+                    if(!isOutOfBounds(d7) && getPieceColor(board[d7[0]][d7[1]]) == " ") unverified_moves.push(d7);
+                    else { unverified_moves.push(d7); c7 = true; break; }
+                    if(!isOutOfBounds(d8) && getPieceColor(board[d8[0]][d8[1]]) == " ") unverified_moves.push(d8);
+                    else { unverified_moves.push(d8); c8 = true; break; }
                 }
                 break;
             case 'K':
