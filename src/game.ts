@@ -79,7 +79,6 @@ function FENToArray(FEN: string): string[][] {
 
 function ArrayToFEN(array: string[][]): string {
     let fen: string = array.join('/').replaceAll(',', '');
-    console.log(fen);
     let finds: any = fen.match(/[ ]+/g);
     for(let find of finds) {
         fen = fen.replace(find, find.length);
@@ -143,7 +142,7 @@ function isChecked(board: string[][], kingColor: string): boolean {
 function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
     let board: string[][] = FENToArray(FEN.value);
     let pieceMoves: number[][];
-    let moves: string[][][] = [];
+    let moves: StructFEN[] = [];
     for(let x = 0; x < 8; x++) {
         for(let y = 0; y < 8; y++) {
             if(getPieceColor(board[x][y]) == FEN.next) {
@@ -152,13 +151,13 @@ function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
                     let futureBoard: string[][] = board.map(a => {return {...a}});
                     futureBoard[v[0]][v[1]] = futureBoard[x][y];
                     futureBoard[x][y] = ' ';
-                    return futureBoard;
+                    return new StructFEN(ArrayToFEN(futureBoard));
                 }));
                 //moves = moves.concat(pieceMoves.map(v => new Move(board[x][y], [x,y], v)));
             }
         }
     }
-    return moves.map(v => new StructFEN(ArrayToFEN(v)));
+    return moves;
 }
 
 function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], location: number[]): number[][] {

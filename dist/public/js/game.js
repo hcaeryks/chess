@@ -47,7 +47,6 @@ function FENToArray(FEN) {
 }
 function ArrayToFEN(array) {
     let fen = array.join('/').replaceAll(',', '');
-    console.log(fen);
     let finds = fen.match(/[ ]+/g);
     for (let find of finds) {
         fen = fen.replace(find, find.length);
@@ -129,13 +128,13 @@ function generateNextPossiblePositions(FEN) {
                     let futureBoard = board.map(a => { return { ...a }; });
                     futureBoard[v[0]][v[1]] = futureBoard[x][y];
                     futureBoard[x][y] = ' ';
-                    return futureBoard;
+                    return new StructFEN(ArrayToFEN(futureBoard));
                 }));
                 //moves = moves.concat(pieceMoves.map(v => new Move(board[x][y], [x,y], v)));
             }
         }
     }
-    return moves.map(v => new StructFEN(ArrayToFEN(v)));
+    return moves;
 }
 function generatePossibleMovesForPiece(FEN, board, location) {
     let piece = board[location[0]][location[1]];
