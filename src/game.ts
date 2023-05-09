@@ -78,7 +78,8 @@ function FENToArray(FEN: string): string[][] {
 }
 
 function ArrayToFEN(array: string[][]): string {
-    let fen = array.join('/').replaceAll(',', '');
+    let fen: string = array.join('/').replaceAll(',', '');
+    console.log(fen);
     let finds: any = fen.match(/[ ]+/g);
     for(let find of finds) {
         fen = fen.replace(find, find.length);
@@ -98,6 +99,25 @@ function squareIsOccupied(board: string[][], location: number[]): boolean {
 
 function isOutOfBounds(location: number[]): boolean {
     return (location[0] >= 0 && location[1] >= 0 && location[0] < 8 && location[1] < 8) ? false : true;
+}
+
+function getMaterial(board: string[][], color: string) {
+    let material: number = 0;
+    for(let x = 0; x < 8; x++) {
+        for(let y = 0; y < 8; y++) {
+            if(getPieceColor(board[x][y]) == color) {
+                switch(board[x][y].toUpperCase()) {
+                    case "R": material += 5; break;
+                    case "N": material += 3; break;
+                    case "B": material += 3; break;
+                    case "Q": material += 9; break;
+                    case "K": material += 0; break;
+                    case "P": material += 1; break;
+                }
+            }
+        }
+    }
+    return material;
 }
 
 function isChecked(board: string[][], kingColor: string): boolean {
@@ -120,19 +140,25 @@ function isChecked(board: string[][], kingColor: string): boolean {
     return true;
 }
 
-function generateNextPossiblePositions(FEN: StructFEN): Move[] {
+function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
     let board: string[][] = FENToArray(FEN.value);
     let pieceMoves: number[][];
-    let moves: Move[] = [];
+    let moves: string[][][] = [];
     for(let x = 0; x < 8; x++) {
         for(let y = 0; y < 8; y++) {
             if(getPieceColor(board[x][y]) == FEN.next) {
                 pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x,y]);
-                moves = moves.concat(pieceMoves.map(v => new Move(board[x][y], [x,y], v)));
+                moves = moves.concat(pieceMoves.map(v => {
+                    let futureBoard: string[][] = board.map(a => {return {...a}});
+                    futureBoard[v[0]][v[1]] = futureBoard[x][y];
+                    futureBoard[x][y] = ' ';
+                    return futureBoard;
+                }));
+                //moves = moves.concat(pieceMoves.map(v => new Move(board[x][y], [x,y], v)));
             }
         }
     }
-    return moves;
+    return moves.map(v => new StructFEN(ArrayToFEN(v)));
 }
 
 function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], location: number[]): number[][] {
@@ -325,8 +351,6 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
         // TODO: invalidar movimentos que causam check em si mesmo
         let temp_board: string[][];
         unverified_moves.forEach(move => {
-            console.log(piece);
-            console.log(board);
             if(!isOutOfBounds(move) && color != getPieceColor(board[move[0]][move[1]]) && (board[move[0]][move[1]] != 'K' || board[move[0]][move[1]] != 'k') /*&& !isChecked(temp_board, FEN.next)*/) moves.push(move);
         });
         return moves;
