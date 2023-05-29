@@ -13,12 +13,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <script src="../main.js"></script>
     <div class="container">
         <div class="header">
             <div class="title">Chess</div>
         </div>
-        <div class="chess-board">
+        <!-- <div class="chess-board">
             <div class="row">
                 <div id="a8" class="cell-light" ondragover="allowDrop(event)" ondrop="drop(event)">
                     <img id="darkRookLeft" src="../assets/darkRookLeft.png" alt="darkRookLeft" draggable="true" ondragstart="drag(event)" />
@@ -170,12 +169,14 @@
                     <img id="lightRookRight" src="../assets/lightRookRight.png" alt="lightRook" draggable="true" ondragstart="drag(event)" />
                 </div>
             </div>
-        </div>
+        </div> -->
+        <canvas id="chessboard" width="650" height="650"></canvas>
         <a href="/pages/index.html">
             <button class="button-voltar">
                 Sair
             </button>
         </a>
     </div>
+    <script src="../main.js"></script>
 </body>
 </html>
