@@ -23,7 +23,7 @@ for(let i = 0; i < totalPieceImages; i++) pieces[i].src = "assets/"+pieceImageNa
 circles[0].src = "assets/yellow.png";
 circles[1].src = "assets/red.png";
 const proms = pieces.map(im=>new Promise(res => im.onload=()=>res(im.width,im.height)))
-Promise.all(proms).then(data=>{console.log(data)})
+Promise.all(proms).then(data=>{redraw(game.board)})
 
 function drawBaseBoard() {
     ctx.fillStyle = "rgb(0,0,0)"
