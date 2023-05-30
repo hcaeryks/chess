@@ -7,7 +7,7 @@ const squareSize = canvas.offsetHeight/8;
 const pieces = [new Image(), new Image(), new Image(), new Image(),  new Image(), new Image(),
                 new Image(), new Image(), new Image(), new Image(), new Image(), new Image(),
                 new Image(), new Image(), new Image(), new Image(), new Image(), new Image(), new Image()];
-const pieceImageNames = ["wR", "wN", "wB", "wQ", "wK", "wP", "bR", "bN", "bB", "bQ", "bK", "bP", "R_glow", "R_glow", "B_glow", "Q_glow", "K_glow", "P_glow", "K_red_glow"];
+const pieceImageNames = ["wR", "wN", "wB", "wQ", "wK", "wP", "bR", "bN", "bB", "bQ", "bK", "bP", "R_glow", "N_glow", "B_glow", "Q_glow", "K_glow", "P_glow", "K_red_glow"];
 const pieceShortName = ["R", "N", "B", "Q", "K", "P", "r", "n", "b", "q", "k", "p"];
 const totalPieceImages = pieces.length;
 const circles = [new Image(), new Image()]
