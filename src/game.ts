@@ -12,19 +12,59 @@ class Game {
     public blackQueenRook: number = 1;
     public blackKingRook: number = 1;
     public playingAs: string; // "w" or "b"
+    public next: string = "w";
     public board: string[][];
     public FEN: StructFEN;
+    public FENvalue: string;
+    public halfMoveClock: number = 0;
+    public fullMoveClock: number = 1;
 
     constructor(playingAs: string) {
         this.FEN = new StructFEN(this.initialStatus);
+        this.FENvalue = this.initialStatus;
         this.board = FENToArray(this.initialStatus);
         this.playingAs = playingAs;
     }
 
-    startFromDifferentPosition(FEN: string, playingAs: string) {
+    public startFromDifferentPosition(FEN: string, playingAs: string) {
         this.FEN = new StructFEN(FEN);
+        this.FENvalue = FEN;
         this.board = FENToArray(FEN);
         this.playingAs = playingAs;
+    }
+
+    public AImakeMove(FEN: StructFEN) {
+        this.FEN = FEN;
+        this.FENvalue = FEN.value;
+        this.board = FENToArray(this.FENvalue);
+        this.next = this.next == "w" ? "b" : "w";
+    }
+
+    public makeMove(move: Move) {
+        let color = getPieceColor(move.piece);
+        let piece: string = move.piece.toUpperCase();
+        if(piece == "K") {
+            if(color == "w") { this.whiteKingRook = 0; this.whiteQueenRook = 0; }
+            else if(color == "b") { this.blackKingRook = 0; this.blackQueenRook = 0; }
+        } else if (piece == "R") {
+            if(move.location[0] == 7 && move.location[1] == 7) this.whiteKingRook = 0; 
+            if(move.location[0] == 7 && move.location[1] == 0) this.whiteQueenRook = 0; 
+            if(move.location[0] == 0 && move.location[1] == 0) this.blackQueenRook = 0; 
+            if(move.location[0] == 0 && move.location[1] == 7) this.blackKingRook = 0; 
+        }
+        this.board[move.location[0]][move.location[1]] = ' ';
+        this.board[move.futureLocation[0]][move.futureLocation[1]] = move.piece;
+        this.next = this.next == "w" ? "b" : "w";
+
+        let castling = "";
+        if(this.whiteKingRook) castling += "K";
+        if(this.whiteQueenRook) castling += "Q";
+        if(this.blackKingRook) castling += "k";
+        if(this.blackQueenRook) castling += "q"
+        if(castling == "") castling = "-";
+        this.fullMoveClock++;
+        this.FENvalue = ArrayToFEN(this.board) + " " + this.next + " " + castling + " " + "-"/*enpassant*/ + " " + this.halfMoveClock + " " + this.fullMoveClock;
+        this.FEN = new StructFEN(this.FENvalue);
     }
 
     /* essa parte deveria estar no front end, mas vou deixar aqui pra caso queiram usar
@@ -70,7 +110,7 @@ class Move {
     constructor(piece: string, location: number[], futureLocation: number[]) {
         this.piece = piece;
         this.location = location;
-        this.futureLocation = location;
+        this.futureLocation = futureLocation;
     }
 }
 
@@ -170,7 +210,9 @@ function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
 
 function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], location: number[]): number[][] {
     let piece: string = board[location[0]][location[1]];
+    if(piece == ' ') return [];
     let color: string = getPieceColor(piece);
+    let opposite: string = color == "w" ? "b" : "w";
     if(color == FEN.next) {
         let unverified_moves: number[][] = [];
         let moves: number[][] = [];
@@ -183,14 +225,14 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
                     let d2: number[] = [location[0]-i,location[1]];
                     let d3: number[] = [location[0],location[1]+i];
                     let d4: number[] = [location[0],location[1]-i];
-                    if(!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
-                    else { unverified_moves.push(d1); c1 = true; break; }
-                    if(!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
-                    else { unverified_moves.push(d2); c2 = true; break; }
-                    if(!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
-                    else { unverified_moves.push(d3); c3 = true; break; }
-                    if(!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
-                    else { unverified_moves.push(d4); c4 = true; break; }
+                    if(c1 == false && !isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
+                    else { if(c1 == false) { unverified_moves.push(d1); } c1 = true; }
+                    if(c2 == false && !isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
+                    else { if(c2 == false) { unverified_moves.push(d2); } c2 = true; }
+                    if(c3 == false && !isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
+                    else { if(c3 == false) { unverified_moves.push(d3); } c3 = true; }
+                    if(c4 == false && !isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
+                    else { if(c4 == false) { unverified_moves.push(d4); } c4 = true; }
                 }
                 break;
             case 'N':
@@ -210,14 +252,14 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
                     let d2: number[] = [location[0]+i,location[1]-i];
                     let d3: number[] = [location[0]-i,location[1]+i];
                     let d4: number[] = [location[0]-i,location[1]-i];
-                    if(!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
-                    else { unverified_moves.push(d1); c1 = true; break; }
-                    if(!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
-                    else { unverified_moves.push(d2); c2 = true; break; }
-                    if(!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
-                    else { unverified_moves.push(d3); c3 = true; break; }
-                    if(!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
-                    else { unverified_moves.push(d4); c4 = true; break; }
+                    if(!c1 && !isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
+                    else { if(c1 == false) { unverified_moves.push(d1); } c1 = true; }
+                    if(!c2 && !isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
+                    else { if(c2 == false) { unverified_moves.push(d2); } c2 = true; }
+                    if(!c3 && !isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
+                    else { if(c3 == false) { unverified_moves.push(d3); } c3 = true; }
+                    if(!c4 && !isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
+                    else { if(c4 == false) { unverified_moves.push(d4); } c4 = true; }
                 }
                 break;
             case 'Q':
@@ -231,22 +273,22 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
                     let d6: number[] = [location[0]+i,location[1]-i];
                     let d7: number[] = [location[0]-i,location[1]+i];
                     let d8: number[] = [location[0]-i,location[1]-i];
-                    if(!isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
-                    else { unverified_moves.push(d1); c1 = true; break; }
-                    if(!isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
-                    else { unverified_moves.push(d2); c2 = true; break; }
-                    if(!isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
-                    else { unverified_moves.push(d3); c3 = true; break; }
-                    if(!isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
-                    else { unverified_moves.push(d4); c4 = true; break; }
-                    if(!isOutOfBounds(d5) && getPieceColor(board[d5[0]][d5[1]]) == " ") unverified_moves.push(d5);
-                    else { unverified_moves.push(d5); c5 = true; break; }
-                    if(!isOutOfBounds(d6) && getPieceColor(board[d6[0]][d6[1]]) == " ") unverified_moves.push(d6);
-                    else { unverified_moves.push(d6); c6 = true; break; }
-                    if(!isOutOfBounds(d7) && getPieceColor(board[d7[0]][d7[1]]) == " ") unverified_moves.push(d7);
-                    else { unverified_moves.push(d7); c7 = true; break; }
-                    if(!isOutOfBounds(d8) && getPieceColor(board[d8[0]][d8[1]]) == " ") unverified_moves.push(d8);
-                    else { unverified_moves.push(d8); c8 = true; break; }
+                    if(!c1 && !isOutOfBounds(d1) && getPieceColor(board[d1[0]][d1[1]]) == " ") unverified_moves.push(d1);
+                    else { if(c1 == false) { unverified_moves.push(d1); } c1 = true; }
+                    if(!c2 && !isOutOfBounds(d2) && getPieceColor(board[d2[0]][d2[1]]) == " ") unverified_moves.push(d2);
+                    else { if(c2 == false) { unverified_moves.push(d2); } c2 = true; }
+                    if(!c3 && !isOutOfBounds(d3) && getPieceColor(board[d3[0]][d3[1]]) == " ") unverified_moves.push(d3);
+                    else { if(c3 == false) { unverified_moves.push(d3); } c3 = true; }
+                    if(!c4 && !isOutOfBounds(d4) && getPieceColor(board[d4[0]][d4[1]]) == " ") unverified_moves.push(d4);
+                    else { if(c4 == false) { unverified_moves.push(d4); } c4 = true; }
+                    if(!c5 && !isOutOfBounds(d5) && getPieceColor(board[d5[0]][d5[1]]) == " ") unverified_moves.push(d5);
+                    else { if(c5 == false) { unverified_moves.push(d5); } c5 = true; }
+                    if(!c6 && !isOutOfBounds(d6) && getPieceColor(board[d6[0]][d6[1]]) == " ") unverified_moves.push(d6);
+                    else { if(c6 == false) { unverified_moves.push(d6); } c6 = true; }
+                    if(!c7 && !isOutOfBounds(d7) && getPieceColor(board[d7[0]][d7[1]]) == " ") unverified_moves.push(d7);
+                    else { if(c7 == false) { unverified_moves.push(d7); } c7 = true; }
+                    if(!c8 && !isOutOfBounds(d8) && getPieceColor(board[d8[0]][d8[1]]) == " ") unverified_moves.push(d8);
+                    else { if(c8 == false) { unverified_moves.push(d8); } c8 = true; }
                 }
                 break;
             case 'K':
