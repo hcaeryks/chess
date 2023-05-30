@@ -58,10 +58,5 @@ function getNextPosition(board: StructFEN, depth: number): StructFEN {
     let positionStrength: number[] = [];
     let i: number = 0;
     possiblePositions.forEach(position => {positionStrength[i] = minimax(position, board, depth, position.next, position.next, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER); i++;});
-    return depth % 2 == 0 ? possiblePositions[positionStrength.indexOf(Math.min.apply(Math, positionStrength))] : possiblePositions[positionStrength.indexOf(Math.max.apply(Math, positionStrength))];
+    return depth % 2 == 0 ? possiblePositions[positionStrength.indexOf(Math.max.apply(Math, positionStrength))] : possiblePositions[positionStrength.indexOf(Math.min.apply(Math, positionStrength))];
 }
-
-let game = new Game("w");
-game.startFromDifferentPosition("r3k2r/pbpp1pp1/1pn1p2p/4P3/1b1P1q2/3B1N2/PPP1NPPP/R2Q1RK1 w - - 1 1", "b");
-console.log(FENToArray(game.FEN.value));
-console.log(FENToArray(getNextPosition(game.FEN, 3).value));
