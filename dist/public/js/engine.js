@@ -6,7 +6,7 @@ function minimax(board, originalBoard, depth, aiColor, color, alpha, beta) {
     if (depth == 0)
         return evaluatePosition(board, originalBoard, aiColor);
     else if (aiColor == color) {
-        value = -1000;
+        value = Number.MIN_SAFE_INTEGER;
         possibilities = generateNextPossiblePositions(board);
         for (let i = 0; i < possibilities.length; i++) {
             value = Math.max(value, minimax(possibilities[i], originalBoard, depth - 1, aiColor, nextColor, alpha, beta));
@@ -17,7 +17,7 @@ function minimax(board, originalBoard, depth, aiColor, color, alpha, beta) {
         return value;
     }
     else {
-        value = +1000;
+        value = Number.MAX_SAFE_INTEGER;
         possibilities = generateNextPossiblePositions(board);
         for (let i = 0; i < possibilities.length; i++) {
             value = Math.min(value, minimax(possibilities[i], originalBoard, depth - 1, aiColor, nextColor, alpha, beta));
@@ -64,10 +64,6 @@ function getNextPosition(board, depth) {
     let possiblePositions = generateNextPossiblePositions(board);
     let positionStrength = [];
     let i = 0;
-    possiblePositions.forEach(position => { positionStrength[i] = principalVariationSearch(position, board, depth, position.next, position.next, -1000, 1000); i++; });
-    return depth % 2 == 0 ? possiblePositions[positionStrength.indexOf(Math.min.apply(Math, positionStrength))] : possiblePositions[positionStrength.indexOf(Math.max.apply(Math, positionStrength))];
+    possiblePositions.forEach(position => { positionStrength[i] = minimax(position, board, depth, position.next, position.next, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER); i++; });
+    return depth % 2 == 0 ? possiblePositions[positionStrength.indexOf(Math.max.apply(Math, positionStrength))] : possiblePositions[positionStrength.indexOf(Math.min.apply(Math, positionStrength))];
 }
-let game = new Game("w");
-game.startFromDifferentPosition("r3k2r/pbpp1pp1/1pn1p2p/4P3/1b1P1q2/3B1N2/PPP1NPPP/R2Q1RK1 w - - 1 1", "b");
-console.log(FENToArray(game.FEN.value));
-console.log(FENToArray(getNextPosition(game.FEN, 3).value));
