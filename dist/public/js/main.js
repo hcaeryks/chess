@@ -39,10 +39,10 @@ Promise.all(proms).then(data=>{
 })
 
 function drawBaseBoard() {
-    ctx.fillStyle = "rgb(0,0,0)"
-    ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
-    let light = "rgba(240,217,181,0.8)";
-    let dark = "rgba(180,140,100,0.8)";
+    ctx.fillStyle = "blue";
+    ctx.fillRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+    let light = '#f8f9fa';
+    let dark = '#007bff';
     let color = true;
     for(let i = 0; i < 64; i++) {
         if(color) ctx.fillStyle = light;
