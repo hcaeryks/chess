@@ -29,8 +29,30 @@ class Game {
     AImakeMove(FEN) {
         this.FEN = FEN;
         this.FENvalue = FEN.value;
-        this.board = FENToArray(this.FENvalue);
+        let temp_board = FENToArray(this.FENvalue);
+        let piece = "";
+        let start = [-1, -1];
+        let end = [-1, -1];
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                if (this.board[x][y] != temp_board[x][y] && temp_board[x][y] == ' ') {
+                    piece = this.board[x][y];
+                    start = [x, y];
+                    break;
+                }
+            }
+        }
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                if (this.board[x][y] != temp_board[x][y] && temp_board[x][y] == piece && this.board[x][y] == ' ') {
+                    end = [x, y];
+                    break;
+                }
+            }
+        }
+        this.board = temp_board;
         this.next = this.next == "w" ? "b" : "w";
+        return [piece, start, end];
     }
     makeMove(move) {
         let color = getPieceColor(move.piece);

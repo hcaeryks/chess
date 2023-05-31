@@ -18,6 +18,9 @@ let y = canvas.height/2;
 let selectedPieceName = " ";
 let selectedPiece = [-1, -1];
 let selectableSquares = [];
+let animating;
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 for(let i = 0; i < totalPieceImages; i++) pieces[i].src = "assets/"+pieceImageNames[i]+".svg";
 circles[0].src = "assets/yellow.png";
@@ -61,6 +64,28 @@ function redraw(board) {
     }
 }
 
+async function animatePiece(board, piece, from, to) {
+    board[from[0]][from[1]] = ' ';
+    let start = [from[0]*squareSize, from[1]*squareSize]
+    let current = [from[0]*squareSize, from[1]*squareSize]
+    let end = [to[0]*squareSize, to[1]*squareSize];
+    let speed = 40;
+    let val1 = (end[0] - start[0])/speed;
+    let val2 = (end[1] - start[1])/speed;
+    let i = 0;
+    selectableSquares = [];
+    while(i <= speed) {
+        redraw(board);
+        current[0] = start[0] + i * val1;
+        current[1] = start[1] + i * val2;
+        ctx.drawImage(pieces[pieceShortName.indexOf(piece)], current[1], current[0], squareSize, squareSize);
+        i++;
+        await sleep(1);
+    }
+    redraw(board);
+
+}
+
 function getRelPos(e) {
     return [e.pageX - canvasLeft, e.pageY - canvasTop];
 }
@@ -71,24 +96,24 @@ function getBoardPos(e) {
 }
 
 let pointerDown = function() {
-    return function(e) {
+    return async function(e) {
         down = true;
         moved = false;
         let aux = getBoardPos(e);
         let jsonSq = JSON.stringify(selectableSquares);
         let jsonAx = JSON.stringify(aux);
         if(jsonSq.indexOf(jsonAx) != -1) {
+            await animatePiece(game.board, selectedPieceName, selectedPiece, aux);
             game.makeMove(new Move(selectedPieceName, selectedPiece, aux));
             selectedPiece = [-1, -1];
-            selectedPieceName = " ";
+            selectedPieceName =' ';
             selectableSquares = [];
-
             // animação viria aqui, eu acho
 
             moved = true;
         } else if(game.board[aux[0]][aux[1]] == ' ' || (aux[0] == selectedPiece[0] && aux[1] == selectedPiece[1])) {
             selectedPiece = [-1, -1];
-            selectedPieceName = " ";
+            selectedPieceName = ' ';
             selectableSquares = [];
         } else if(getPieceColor(game.board[aux[0]][aux[1]]) == game.playingAs && game.next == game.playingAs) {
             selectedPiece = aux;
@@ -96,11 +121,15 @@ let pointerDown = function() {
             selectableSquares = generatePossibleMovesForPiece(game.FEN, game.board, selectedPiece);
         }
         redraw(game.board);
-        if(moved) {
-            game.AImakeMove(getNextPosition(game.FEN, 3));
-            redraw(game.board);
-            moved = false;
-        }
+        setTimeout(async function() {
+            if(moved) {
+                let temp_board = game.board;
+                let vals = game.AImakeMove(getNextPosition(game.FEN, 3));
+                await animatePiece(temp_board, vals[0], vals[1], vals[2]);
+                redraw(game.board);
+                moved = false;
+            }
+        }, 10);
     };
 };
 
