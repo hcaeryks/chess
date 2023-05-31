@@ -17,6 +17,13 @@ body {
 }
 
 .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* height: 60rem; */
+}
+
+.container {
     position: absolute;
     background: var(--color1);
     width: 100%;
@@ -36,6 +43,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: -6rem;
 }
 
 .title {
@@ -43,7 +51,7 @@ body {
     font-weigh: bold;
     font-size: 5rem;
     color: var(--color3);
-    margin-left: -1.2rem;
+    margin-left: -1rem;
 }
 
 .chess-board {
@@ -82,7 +90,7 @@ body {
 .buttons {
     display: flex;
     flex-direction: column;
-    margin-top: 12rem;
+    margin-top: 2rem;
 }
 
 a {
@@ -180,4 +188,8 @@ input[type="radio"]:checked + label {
     width: 100%;
     height: 100%;
     display: contents;
+}
+
+canvas {
+    background-color: var(--color1);
 }
