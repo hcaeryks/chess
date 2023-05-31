@@ -26,7 +26,17 @@ for(let i = 0; i < totalPieceImages; i++) pieces[i].src = "assets/"+pieceImageNa
 circles[0].src = "assets/yellow.png";
 circles[1].src = "assets/red.png";
 const proms = pieces.map(im=>new Promise(res => im.onload=()=>res(im.width,im.height)))
-Promise.all(proms).then(data=>{redraw(game.board)})
+Promise.all(proms).then(data=>{
+    redraw(game.board);
+    if(game.playingAs == "b") {
+        setTimeout(async function() {
+            let temp_board = game.board;
+            let vals = game.AImakeMove(getNextPosition(game.FEN, 3));
+            await animatePiece(temp_board, vals[0], vals[1], vals[2]);
+            redraw(game.board);
+        }, 10);
+    }
+})
 
 function drawBaseBoard() {
     ctx.fillStyle = "rgb(0,0,0)"

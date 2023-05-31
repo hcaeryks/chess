@@ -44,7 +44,7 @@ class Game {
         }
         for (let x = 0; x < 8; x++) {
             for (let y = 0; y < 8; y++) {
-                if (this.board[x][y] != temp_board[x][y] && temp_board[x][y] == piece && this.board[x][y] == ' ') {
+                if (this.board[x][y] != temp_board[x][y] && temp_board[x][y] == piece) {
                     end = [x, y];
                     break;
                 }
@@ -177,23 +177,51 @@ function getMaterial(board, color) {
     return material;
 }
 function isChecked(board, kingColor) {
-    let location = [-1, -1];
+    let dx = -1, dy = -1;
     let kingPiece = kingColor == "w" ? "K" : "k";
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {
             if (board[x][y] == kingPiece) {
-                location[0] = x;
-                location[1] = y;
+                dx = x;
+                dy = y;
                 break;
             }
         }
-        if (location[0] != -1)
+        if (x != -1)
             break;
     }
-    ////////////////
-    for (let i = 1; i < 8; i++) {
+    // PAWN
+    if (kingColor == "w") {
+        if (!isOutOfBounds([dx - 1, dy + 1]) && board[dx - 1][dy + 1] == "p")
+            return true;
+        else if (!isOutOfBounds([dx - 1, dy - 1]) && board[dx - 1][dy - 1] == "p")
+            return true;
     }
-    return true;
+    else {
+        if (!isOutOfBounds([dx + 1, dy + 1]) && board[dx + 1][dy + 1] == "P")
+            return true;
+        else if (!isOutOfBounds([dx + 1, dy - 1]) && board[dx + 1][dy - 1] == "P")
+            return true;
+    }
+    // KNIGHT
+    console.log("ok");
+    if (!isOutOfBounds([dx + 2, dy + 1]) && board[dx + 2][dy + 1] == "n")
+        return true;
+    else if (!isOutOfBounds([dx + 2, dy - 1]) && board[dx + 2][dy - 1] == "n")
+        return true;
+    else if (!isOutOfBounds([dx + 1, dy + 2]) && board[dx + 1][dy + 2] == "n")
+        return true;
+    else if (!isOutOfBounds([dx + 1, dy - 2]) && board[dx + 1][dy - 2] == "n")
+        return true;
+    else if (!isOutOfBounds([dx - 1, dy + 2]) && board[dx - 1][dy + 2] == "n")
+        return true;
+    else if (!isOutOfBounds([dx - 1, dy - 2]) && board[dx - 1][dy - 2] == "n")
+        return true;
+    else if (!isOutOfBounds([dx - 2, dy + 1]) && board[dx - 2][dy + 1] == "n")
+        return true;
+    else if (!isOutOfBounds([dx - 2, dy - 1]) && board[dx - 2][dy - 1] == "n")
+        return true;
+    return false;
 }
 function generateNextPossiblePositions(FEN) {
     let board;
@@ -222,7 +250,6 @@ function generatePossibleMovesForPiece(FEN, board, location) {
     if (piece == ' ')
         return [];
     let color = getPieceColor(piece);
-    let opposite = color == "w" ? "b" : "w";
     if (color == FEN.next) {
         let unverified_moves = [];
         let moves = [];
@@ -435,10 +462,23 @@ function generatePossibleMovesForPiece(FEN, board, location) {
                 break;
         }
         // TODO: invalidar movimentos que causam check em si mesmo
-        let temp_board;
+        let temp_board = [["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""]];
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                temp_board[x][y] = board[x][y];
+            }
+        }
         unverified_moves.forEach(move => {
-            if (!isOutOfBounds(move) && color != getPieceColor(board[move[0]][move[1]]) && (board[move[0]][move[1]] != 'K' || board[move[0]][move[1]] != 'k') /*&& !isChecked(temp_board, FEN.next)*/)
+            if (!isOutOfBounds(move) && color != getPieceColor(board[move[0]][move[1]]) && board[move[0]][move[1]] != 'K' && board[move[0]][move[1]] != 'k') {
+                let aux1 = temp_board[location[0]][location[1]];
+                let aux2 = temp_board[move[0]][move[1]];
+                temp_board[location[0]][location[1]] = ' ';
+                temp_board[move[0]][move[1]] = piece;
+                //if(!isChecked(temp_board, color)) 
                 moves.push(move);
+                temp_board[location[0]][location[1]] = aux1;
+                temp_board[move[0]][move[1]] = aux2;
+            }
         });
         return moves;
     }
