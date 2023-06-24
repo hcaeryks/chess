@@ -5,6 +5,7 @@
     escrever função que recebe movimento do front end e atualiza tudo
 */
 
+
 class Game {
     private initialStatus: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     public whiteQueenRook: number = 1;
@@ -38,7 +39,8 @@ class Game {
         this.FENvalue = FEN.value;
 
         let temp_board = FENToArray(this.FENvalue)
-
+        let url="localhost:3000/?fen="+this;
+        httpGet(url);
         let piece = "";
         let start = [-1, -1];
         let end = [-1, -1];
@@ -245,6 +247,13 @@ function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
         }
     }
     return moves;
+}
+function httpGet(theUrl: any)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
 }
 
 function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], location: number[]): number[][] {
