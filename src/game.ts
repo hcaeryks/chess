@@ -39,8 +39,8 @@ class Game {
         this.FENvalue = FEN.value;
 
         let temp_board = FENToArray(this.FENvalue)
-        let url="localhost:3000/?fen="+this;
-        httpGet(url);
+        //let url="localhost:3000/?fen="+this;
+        //httpGet(url);
         let piece = "";
         let start = [-1, -1];
         let end = [-1, -1];
@@ -191,39 +191,28 @@ function getMaterial(board: string[][], color: string) {
     return material;
 }
 
-function isChecked(board: string[][], kingColor: string): boolean {
-    let dx = -1, dy = -1;
-    let kingPiece: string = kingColor == "w" ? "K" : "k";
+function isKingChecked(FEN: StructFEN, color: string): boolean {
+    let answer: boolean = false;
+    let board: string[][];
+    let pieceMoves: number[][];
+    let attacker: string = color == "w" ? "b" : "w";
+    let kingColor: string = color == "w" ? "K" : "k";
+    FEN.next = attacker;
     for(let x = 0; x < 8; x++) {
         for(let y = 0; y < 8; y++) {
-            if(board[x][y] == kingPiece) {
-                dx = x;
-                dy = y;
-                break;
+            board = FENToArray(FEN.value);
+            if(getPieceColor(board[x][y]) == attacker) {
+                pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x,y], false);
+                for(let i = 0; i < pieceMoves.length; i++) {
+                    if(board[pieceMoves[i][0]][pieceMoves[i][1]] == kingColor) {
+                        answer = true;
+                        break;
+                    }
+                }
             }
         }
-        if(x != -1) break;
     }
-
-    // PAWN
-    if(kingColor == "w") {
-        if(!isOutOfBounds([dx-1,dy+1]) && board[dx-1][dy+1] == "p") return true;
-        else if(!isOutOfBounds([dx-1,dy-1]) && board[dx-1][dy-1] == "p") return true;
-    } else {
-        if(!isOutOfBounds([dx+1,dy+1]) && board[dx+1][dy+1] == "P") return true;
-        else if(!isOutOfBounds([dx+1,dy-1]) && board[dx+1][dy-1] == "P") return true;
-    }
-    // KNIGHT
-    console.log("ok")
-    if(!isOutOfBounds([dx+2,dy+1]) && board[dx+2][dy+1] == "n") return true;
-    else if(!isOutOfBounds([dx+2,dy-1]) && board[dx+2][dy-1] == "n") return true;
-    else if(!isOutOfBounds([dx+1,dy+2]) && board[dx+1][dy+2] == "n") return true;
-    else if(!isOutOfBounds([dx+1,dy-2]) && board[dx+1][dy-2] == "n") return true;
-    else if(!isOutOfBounds([dx-1,dy+2]) && board[dx-1][dy+2] == "n") return true;
-    else if(!isOutOfBounds([dx-1,dy-2]) && board[dx-1][dy-2] == "n") return true;
-    else if(!isOutOfBounds([dx-2,dy+1]) && board[dx-2][dy+1] == "n") return true;
-    else if(!isOutOfBounds([dx-2,dy-1]) && board[dx-2][dy-1] == "n") return true;
-    return false;
+    return answer;
 }
 
 function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
@@ -235,7 +224,11 @@ function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
         for(let y = 0; y < 8; y++) {
             board = FENToArray(FEN.value);
             if(getPieceColor(board[x][y]) == FEN.next) {
-                pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x,y]);
+                pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x,y], true);
+                pieceMoves = pieceMoves.filter(v => {
+                    if(board[v[0]][v[1]] == 'K' || board[v[0]][v[1]] == 'k') return false;
+                    return true;
+                });
                 moves = moves.concat(pieceMoves.map(v => {
                     board = FENToArray(FEN.value);
                     board[v[0]][v[1]] = board[x][y];
@@ -247,16 +240,15 @@ function generateNextPossiblePositions(FEN: StructFEN): StructFEN[] {
         }
     }
     return moves;
-}
-function httpGet(theUrl: any)
-{
+}/*
+function httpGet(theUrl: any){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
     xmlHttp.send( null );
     return xmlHttp.responseText;
-}
+}*/
 
-function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], location: number[]): number[][] {
+function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], location: number[], filterOutKings: boolean): number[][] {
     let piece: string = board[location[0]][location[1]];
     if(piece == ' ') return [];
     let color: string = getPieceColor(piece);
@@ -348,6 +340,21 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
                 unverified_moves.push([location[0]-1, location[1]+1]);
                 unverified_moves.push([location[0]-1, location[1]]);
                 unverified_moves.push([location[0]-1, location[1]-1]);
+                /*if(color == "w") {
+                    if(board[7][1] == ' ' && board[7][2] == ' ' && board[7][3] == ' ' && FEN.castling.includes("Q")) {
+                        unverified_moves.push([7,2]);
+                    }
+                    if(board[7][5] == ' ' && board[7][6] == ' ' && FEN.castling.includes("K")) {
+                        unverified_moves.push([7,6]);
+                    }
+                } else {
+                    if(board[0][1] == ' ' && board[0][2] == ' ' && board[0][3] == ' ' && FEN.castling.includes("q")) {
+                        unverified_moves.push([0,2]);
+                    }
+                    if(board[0][5] == ' ' && board[0][6] == ' ' && FEN.castling.includes("k")) {
+                        unverified_moves.push([0,6]);
+                    }
+                }*/
                 break;
             case 'P':
                 // TODO: programar en passant e promoção
@@ -373,16 +380,20 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
                 temp_board[x][y] = board[x][y];
             }
         }
+        let myKing: string = color == "w" ? "K" : "k";
+        let oppositeKing: string = color == "w" ? "k" : "K";
         unverified_moves.forEach(move => {
-            if(!isOutOfBounds(move) && color != getPieceColor(board[move[0]][move[1]]) && board[move[0]][move[1]] != 'K' && board[move[0]][move[1]] != 'k') {
-                let aux1: string = temp_board[location[0]][location[1]];
-                let aux2: string = temp_board[move[0]][move[1]];
-                temp_board[location[0]][location[1]] = ' ';
-                temp_board[move[0]][move[1]] = piece;
-                //if(!isChecked(temp_board, color)) 
-                moves.push(move);
-                temp_board[location[0]][location[1]] = aux1;
-                temp_board[move[0]][move[1]] = aux2;
+            if(!isOutOfBounds(move) && color != getPieceColor(board[move[0]][move[1]]) && board[move[0]][move[1]] != myKing) {
+                if(filterOutKings) {
+                    let aux1: string = temp_board[location[0]][location[1]];
+                    let aux2: string = temp_board[move[0]][move[1]];
+                    temp_board[location[0]][location[1]] = ' ';
+                    temp_board[move[0]][move[1]] = piece;
+                    if(board[move[0]][move[1]] != oppositeKing && !isKingChecked(new StructFEN(ArrayToFEN(temp_board)), color)) moves.push(move);
+                    temp_board[location[0]][location[1]] = aux1;
+                    temp_board[move[0]][move[1]] = aux2;
+                }
+                else moves.push(move);
             }
         });
         return moves;
