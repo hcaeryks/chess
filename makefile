@@ -1,5 +1,5 @@
 all:
-	gcc -oFast ./src/main.c -o ./dist/public/main.exe
+	gcc -oFast ./src/main.c -o main.exe
 
 debug:
-	gcc ./src/main.c -o ./dist/public/main.exe
+	gcc ./src/main.c -o main.exe
