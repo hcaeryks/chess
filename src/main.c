@@ -7,93 +7,7 @@
 #include <sys/time.h>
 #endif
 
-#define U64 unsigned long long
-
-#define empty_board "8/8/8/8/8/8/8/8 b - - "
-#define start_position                                                         \
-  "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "
-#define tricky_position                                                        \
-  "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1 "
-#define killer_position                                                        \
-  "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"
-#define cmk_position                                                           \
-  "r2q1rk1/ppp2ppp/2n1bn2/2b1p3/3pP3/3P1NPP/PPP1NPB1/R1BQ1RK1 b - - 0 9 "
-
-enum {
-  a8,
-  b8,
-  c8,
-  d8,
-  e8,
-  f8,
-  g8,
-  h8,
-  a7,
-  b7,
-  c7,
-  d7,
-  e7,
-  f7,
-  g7,
-  h7,
-  a6,
-  b6,
-  c6,
-  d6,
-  e6,
-  f6,
-  g6,
-  h6,
-  a5,
-  b5,
-  c5,
-  d5,
-  e5,
-  f5,
-  g5,
-  h5,
-  a4,
-  b4,
-  c4,
-  d4,
-  e4,
-  f4,
-  g4,
-  h4,
-  a3,
-  b3,
-  c3,
-  d3,
-  e3,
-  f3,
-  g3,
-  h3,
-  a2,
-  b2,
-  c2,
-  d2,
-  e2,
-  f2,
-  g2,
-  h2,
-  a1,
-  b1,
-  c1,
-  d1,
-  e1,
-  f1,
-  g1,
-  h1,
-  no_sq
-};
-
-enum { P, N, B, R, Q, K, p, n, b, r, q, k };
-
-enum { white, black, both };
-
-enum { rook, bishop };
-
-enum { wk = 1, wq = 2, bk = 4, bq = 8 };
+#include "main.h"
 
 const char *square_to_coordinates[] = {
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8", "a7", "b7", "c7",
@@ -157,12 +71,6 @@ U64 generate_magic_number() {
   return get_random_U64_number() & get_random_U64_number() &
          get_random_U64_number();
 }
-
-#define set_bit(bitboard, square) ((bitboard) |= (1ULL << (square)))
-#define get_bit(bitboard, square) ((bitboard) & (1ULL << (square)))
-#define pop_bit(bitboard, square) ((bitboard) &= ~(1ULL << (square)))
-#define FENmidgame                                                             \
-  "4k2r/pp1rbpp1/2n1b3/2P1p2p/6P1/P1P1B2P/1PKN1P2/3R1B1R w k h6 0 17"
 
 static inline int count_bits(U64 bitboard) {
 
@@ -893,12 +801,7 @@ void print_attacked_squares(int side) {
 
 #define get_move_castling(move) (move & 0x800000)
 
-typedef struct {
 
-  int moves[256];
-
-  int count;
-} moves;
 
 static inline void add_move(moves *move_list, int move) {
 
@@ -956,19 +859,6 @@ void print_move_list(moves *move_list) {
   printf("\n\n     Total number of moves: %d\n\n", move_list->count);
 }
 
-#define copy_board()                                                           \
-  U64 bitboards_copy[12], occupancies_copy[3];                                 \
-  int side_copy, enpassant_copy, castle_copy;                                  \
-  memcpy(bitboards_copy, bitboards, 96);                                       \
-  memcpy(occupancies_copy, occupancies, 24);                                   \
-  side_copy = side, enpassant_copy = enpassant, castle_copy = castle;
-
-#define take_back()                                                            \
-  memcpy(bitboards, bitboards_copy, 96);                                       \
-  memcpy(occupancies, occupancies_copy, 24);                                   \
-  side = side_copy, enpassant = enpassant_copy, castle = castle_copy;
-
-enum { all_moves, only_captures };
 
 const int castling_rights[64] = {
     7,  15, 15, 15, 3,  15, 15, 11, 15, 15, 15, 15, 15, 15, 15, 15,
