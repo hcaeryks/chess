@@ -34,35 +34,16 @@ class Game {
         this.playingAs = playingAs;
     }
 
-    public AImakeMove(FEN: StructFEN) {
-        this.FEN = FEN;
-        this.FENvalue = FEN.value;
-
-        let temp_board = FENToArray(this.FENvalue)
-        //let url="localhost:3000/?fen="+this;
-        //httpGet(url);
-        let piece = "";
-        let start = [-1, -1];
-        let end = [-1, -1];
-        for(let x = 0; x < 8; x++) {
-            for(let y = 0; y < 8; y++) {
-                if(this.board[x][y] != temp_board[x][y] && temp_board[x][y] == ' ') {
-                    piece = this.board[x][y];
-                    start = [x,y];
-                    break;
-                }
-            }
-        }
-        for(let x = 0; x < 8; x++) {
-            for(let y = 0; y < 8; y++) {
-                if(this.board[x][y] != temp_board[x][y] && temp_board[x][y] == piece) {
-                    end = [x,y];
-                    break;
-                }
-            }
-        }
-        this.board = temp_board;
+    public AImakeMove(move: string) {
+        let file: string[] = ["a", "b", "c", "d", "e", "f", "g", "h"];
+        let start: number[] = [8-parseInt(move.charAt(1)), file.indexOf(move.charAt(0))]
+        let end: number[] = [8-parseInt(move.charAt(3)), file.indexOf(move.charAt(2))]
+        let piece: string = this.board[start[0]][start[1]];
+        this.board[end[0]][end[1]] = piece;
+        this.board[start[0]][start[1]] = ' ';
+        this.fullMoveClock++;
         this.next = this.next == "w" ? "b" : "w";
+        console.log(piece, start, end, move);
         return [piece, start, end];
     }
 
