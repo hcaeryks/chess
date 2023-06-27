@@ -1,3 +1,8 @@
+
+mula.exe
+dist/public/js/engine.js
+dist/public/js/game.js
+dist/public/js/index.js
 # Logs
 logs
 *.log

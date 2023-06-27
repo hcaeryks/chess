@@ -56,10 +56,22 @@ function drawBaseBoard() {
 
 function redrawPieces(board) {
     drawBaseBoard();
+    let checked = isKingChecked(game.FEN, game.next);
+    let nchecked = isKingChecked(game.FEN, game.next == "w" ? "b" : "w");
+    let king = game.next == "w" ? "K" : "k";
+    let bking = game.next == "w" ? "k" : "K";
     for(let i = 0; i < 64; i++) {
         let x = i%8 * squareSize;
         let y = Math.floor(i/8) * squareSize;
-        if(board[Math.floor(i/8)][i-((Math.floor(i/8))*8)] != ' ') ctx.drawImage(pieces[pieceShortName.indexOf(board[Math.floor(i/8)][i-((Math.floor(i/8))*8)])], x, y, squareSize, squareSize);
+        if(board[Math.floor(i/8)][i-((Math.floor(i/8))*8)] != ' ') {
+            ctx.drawImage(pieces[pieceShortName.indexOf(board[Math.floor(i/8)][i-((Math.floor(i/8))*8)])], x, y, squareSize, squareSize);
+            if(checked && board[Math.floor(i/8)][i-((Math.floor(i/8))*8)] == king) {
+                ctx.drawImage(pieces[pieces.length-1], x, y, squareSize, squareSize);
+            }
+            if(nchecked && board[Math.floor(i/8)][i-((Math.floor(i/8))*8)] == bking) {
+                ctx.drawImage(pieces[pieces.length-1], x, y, squareSize, squareSize);
+            }
+        }
     }
 }
 
@@ -121,6 +133,7 @@ let pointerDown = function() {
             // animação viria aqui, eu acho
 
             moved = true;
+            if(generateNextPossiblePositions(game.FEN).length == 0) alert("Você venceu!")
         } else if(game.board[aux[0]][aux[1]] == ' ' || (aux[0] == selectedPiece[0] && aux[1] == selectedPiece[1])) {
             selectedPiece = [-1, -1];
             selectedPieceName = ' ';
@@ -128,16 +141,24 @@ let pointerDown = function() {
         } else if(getPieceColor(game.board[aux[0]][aux[1]]) == game.playingAs && game.next == game.playingAs) {
             selectedPiece = aux;
             selectedPieceName = game.board[aux[0]][aux[1]];
-            selectableSquares = generatePossibleMovesForPiece(game.FEN, game.board, selectedPiece);
+            selectableSquares = generatePossibleMovesForPiece(game.FEN, game.board, selectedPiece, true);
         }
         redraw(game.board);
         setTimeout(async function() {
             if(moved) {
                 let temp_board = game.board;
-                let vals = game.AImakeMove(getNextPosition(game.FEN, 3));
-                await animatePiece(temp_board, vals[0], vals[1], vals[2]);
-                redraw(game.board);
-                moved = false;
+                const xhr = new XMLHttpRequest();
+                    xhr.open("GET", "http://localhost:3000/getmove?fen=" + game.FENvalue);
+                    xhr.send();
+                    xhr.onload = async () => {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        let vals = game.AImakeMove(xhr.response);
+                        await animatePiece(temp_board, vals[0], vals[1], vals[2]);
+                        redraw(game.board);
+                        moved = false;
+                        if(generateNextPossiblePositions(game.FEN).length == 0) alert("Você perdeu!")
+                    }
+                };
             }
         }, 10);
     };

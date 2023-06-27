@@ -2117,6 +2117,6 @@ int main(int argc, char **argv) {
   init_all();
   parse_fen(argv[1]);
   // print_board();
-  search_position(7);
+  search_position(atoi(argv[2]));
   return 0;
 }

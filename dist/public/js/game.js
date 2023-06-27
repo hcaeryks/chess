@@ -26,32 +26,16 @@ class Game {
         this.board = FENToArray(FEN);
         this.playingAs = playingAs;
     }
-    AImakeMove(FEN) {
-        this.FEN = FEN;
-        this.FENvalue = FEN.value;
-        let temp_board = FENToArray(this.FENvalue);
-        let piece = "";
-        let start = [-1, -1];
-        let end = [-1, -1];
-        for (let x = 0; x < 8; x++) {
-            for (let y = 0; y < 8; y++) {
-                if (this.board[x][y] != temp_board[x][y] && temp_board[x][y] == ' ') {
-                    piece = this.board[x][y];
-                    start = [x, y];
-                    break;
-                }
-            }
-        }
-        for (let x = 0; x < 8; x++) {
-            for (let y = 0; y < 8; y++) {
-                if (this.board[x][y] != temp_board[x][y] && temp_board[x][y] == piece) {
-                    end = [x, y];
-                    break;
-                }
-            }
-        }
-        this.board = temp_board;
+    AImakeMove(move) {
+        let file = ["a", "b", "c", "d", "e", "f", "g", "h"];
+        let start = [8 - parseInt(move.charAt(1)), file.indexOf(move.charAt(0))];
+        let end = [8 - parseInt(move.charAt(3)), file.indexOf(move.charAt(2))];
+        let piece = this.board[start[0]][start[1]];
+        this.board[end[0]][end[1]] = piece;
+        this.board[start[0]][start[1]] = ' ';
+        this.fullMoveClock++;
         this.next = this.next == "w" ? "b" : "w";
+        console.log(piece, start, end, move);
         return [piece, start, end];
     }
     makeMove(move) {
@@ -176,52 +160,28 @@ function getMaterial(board, color) {
     }
     return material;
 }
-function isChecked(board, kingColor) {
-    let dx = -1, dy = -1;
-    let kingPiece = kingColor == "w" ? "K" : "k";
+function isKingChecked(FEN, color) {
+    let answer = false;
+    let board;
+    let pieceMoves;
+    let attacker = color == "w" ? "b" : "w";
+    let kingColor = color == "w" ? "K" : "k";
+    FEN.next = attacker;
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {
-            if (board[x][y] == kingPiece) {
-                dx = x;
-                dy = y;
-                break;
+            board = FENToArray(FEN.value);
+            if (getPieceColor(board[x][y]) == attacker) {
+                pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x, y], false);
+                for (let i = 0; i < pieceMoves.length; i++) {
+                    if (board[pieceMoves[i][0]][pieceMoves[i][1]] == kingColor) {
+                        answer = true;
+                        break;
+                    }
+                }
             }
         }
-        if (x != -1)
-            break;
     }
-    // PAWN
-    if (kingColor == "w") {
-        if (!isOutOfBounds([dx - 1, dy + 1]) && board[dx - 1][dy + 1] == "p")
-            return true;
-        else if (!isOutOfBounds([dx - 1, dy - 1]) && board[dx - 1][dy - 1] == "p")
-            return true;
-    }
-    else {
-        if (!isOutOfBounds([dx + 1, dy + 1]) && board[dx + 1][dy + 1] == "P")
-            return true;
-        else if (!isOutOfBounds([dx + 1, dy - 1]) && board[dx + 1][dy - 1] == "P")
-            return true;
-    }
-    // KNIGHT
-    console.log("ok");
-    if (!isOutOfBounds([dx + 2, dy + 1]) && board[dx + 2][dy + 1] == "n")
-        return true;
-    else if (!isOutOfBounds([dx + 2, dy - 1]) && board[dx + 2][dy - 1] == "n")
-        return true;
-    else if (!isOutOfBounds([dx + 1, dy + 2]) && board[dx + 1][dy + 2] == "n")
-        return true;
-    else if (!isOutOfBounds([dx + 1, dy - 2]) && board[dx + 1][dy - 2] == "n")
-        return true;
-    else if (!isOutOfBounds([dx - 1, dy + 2]) && board[dx - 1][dy + 2] == "n")
-        return true;
-    else if (!isOutOfBounds([dx - 1, dy - 2]) && board[dx - 1][dy - 2] == "n")
-        return true;
-    else if (!isOutOfBounds([dx - 2, dy + 1]) && board[dx - 2][dy + 1] == "n")
-        return true;
-    else if (!isOutOfBounds([dx - 2, dy - 1]) && board[dx - 2][dy - 1] == "n")
-        return true;
-    return false;
+    return answer;
 }
 function generateNextPossiblePositions(FEN) {
     let board;
@@ -232,7 +192,12 @@ function generateNextPossiblePositions(FEN) {
         for (let y = 0; y < 8; y++) {
             board = FENToArray(FEN.value);
             if (getPieceColor(board[x][y]) == FEN.next) {
-                pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x, y]);
+                pieceMoves = generatePossibleMovesForPiece(FEN, FENToArray(FEN.value), [x, y], true);
+                pieceMoves = pieceMoves.filter(v => {
+                    if (board[v[0]][v[1]] == 'K' || board[v[0]][v[1]] == 'k')
+                        return false;
+                    return true;
+                });
                 moves = moves.concat(pieceMoves.map(v => {
                     board = FENToArray(FEN.value);
                     board[v[0]][v[1]] = board[x][y];
@@ -244,8 +209,14 @@ function generateNextPossiblePositions(FEN) {
         }
     }
     return moves;
-}
-function generatePossibleMovesForPiece(FEN, board, location) {
+} /*
+function httpGet(theUrl: any){
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}*/
+function generatePossibleMovesForPiece(FEN, board, location, filterOutKings) {
     let piece = board[location[0]][location[1]];
     if (piece == ' ')
         return [];
@@ -437,6 +408,21 @@ function generatePossibleMovesForPiece(FEN, board, location) {
                 unverified_moves.push([location[0] - 1, location[1] + 1]);
                 unverified_moves.push([location[0] - 1, location[1]]);
                 unverified_moves.push([location[0] - 1, location[1] - 1]);
+                /*if(color == "w") {
+                    if(board[7][1] == ' ' && board[7][2] == ' ' && board[7][3] == ' ' && FEN.castling.includes("Q")) {
+                        unverified_moves.push([7,2]);
+                    }
+                    if(board[7][5] == ' ' && board[7][6] == ' ' && FEN.castling.includes("K")) {
+                        unverified_moves.push([7,6]);
+                    }
+                } else {
+                    if(board[0][1] == ' ' && board[0][2] == ' ' && board[0][3] == ' ' && FEN.castling.includes("q")) {
+                        unverified_moves.push([0,2]);
+                    }
+                    if(board[0][5] == ' ' && board[0][6] == ' ' && FEN.castling.includes("k")) {
+                        unverified_moves.push([0,6]);
+                    }
+                }*/
                 break;
             case 'P':
                 // TODO: programar en passant e promoção
@@ -468,16 +454,22 @@ function generatePossibleMovesForPiece(FEN, board, location) {
                 temp_board[x][y] = board[x][y];
             }
         }
+        let myKing = color == "w" ? "K" : "k";
+        let oppositeKing = color == "w" ? "k" : "K";
         unverified_moves.forEach(move => {
-            if (!isOutOfBounds(move) && color != getPieceColor(board[move[0]][move[1]]) && board[move[0]][move[1]] != 'K' && board[move[0]][move[1]] != 'k') {
-                let aux1 = temp_board[location[0]][location[1]];
-                let aux2 = temp_board[move[0]][move[1]];
-                temp_board[location[0]][location[1]] = ' ';
-                temp_board[move[0]][move[1]] = piece;
-                //if(!isChecked(temp_board, color)) 
-                moves.push(move);
-                temp_board[location[0]][location[1]] = aux1;
-                temp_board[move[0]][move[1]] = aux2;
+            if (!isOutOfBounds(move) && color != getPieceColor(board[move[0]][move[1]]) && board[move[0]][move[1]] != myKing) {
+                if (filterOutKings) {
+                    let aux1 = temp_board[location[0]][location[1]];
+                    let aux2 = temp_board[move[0]][move[1]];
+                    temp_board[location[0]][location[1]] = ' ';
+                    temp_board[move[0]][move[1]] = piece;
+                    if (board[move[0]][move[1]] != oppositeKing && !isKingChecked(new StructFEN(ArrayToFEN(temp_board)), color))
+                        moves.push(move);
+                    temp_board[location[0]][location[1]] = aux1;
+                    temp_board[move[0]][move[1]] = aux2;
+                }
+                else
+                    moves.push(move);
             }
         });
         return moves;
