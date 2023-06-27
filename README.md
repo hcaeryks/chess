@@ -7,6 +7,7 @@ A especificação completa do escopo e requisitos pode ser encontrada no arquivo
 
 ### Instalação
 1 - Clone o repositório
+
 2 - Execute os seguintes comandos
  ```
 npm install
