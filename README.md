@@ -13,7 +13,7 @@ npm install
 npm run build
 npm run build
 npm start
-```.
+``` 
 3 - Acesse localhost:3000 em seu browser
 
 ### Como Jogar
