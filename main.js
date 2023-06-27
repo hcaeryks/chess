@@ -26,7 +26,7 @@ app.get('/getmove', async (req, res) => {
   console.time("mula");
   os.execCommand('mula.exe '+req.query.fen).then(r => {
     res.send(r);
-  })
+  });
   console.timeEnd("mula");
 });
 
