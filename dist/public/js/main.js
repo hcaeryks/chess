@@ -148,20 +148,17 @@ let pointerDown = function() {
             if(moved) {
                 let temp_board = game.board;
                 const xhr = new XMLHttpRequest();
-                    xhr.open("GET", "http://localhost:3000/getmove?fen=r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
+                    xhr.open("GET", "http://localhost:3000/getmove?fen=" + game.FENvalue);
                     xhr.send();
-                    xhr.onload = () => {
+                    xhr.onload = async () => {
                     if (xhr.readyState == 4 && xhr.status == 200) {
-                        console.log(xhr.response);
-                    } else {
-                        console.log(`Error: ${xhr.status}`);
+                        let vals = game.AImakeMove(xhr.response);
+                        await animatePiece(temp_board, vals[0], vals[1], vals[2]);
+                        redraw(game.board);
+                        moved = false;
+                        if(generateNextPossiblePositions(game.FEN).length == 0) alert("Você perdeu!")
                     }
                 };
-                let vals = game.AImakeMove(getNextPosition(game.FEN, 2));
-                await animatePiece(temp_board, vals[0], vals[1], vals[2]);
-                redraw(game.board);
-                moved = false;
-                if(generateNextPossiblePositions(game.FEN).length == 0) alert("Você perdeu!")
             }
         }, 10);
     };

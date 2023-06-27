@@ -7,10 +7,27 @@ const port = 3000;
 app.use(express.static("dist/public"));
 app.use(cors());
 
-app.get('/getmove', (req, res) => {
-  console.time("teste");
-  exec("./test "+req.query.fen, (error, stdout, stderr) => {res.send(stdout);console.log(stdout)});
-  console.timeEnd("teste");
+function os_func() {
+  this.execCommand = function (cmd) {
+      return new Promise((resolve, reject)=> {
+         exec(cmd, (error, stdout, stderr) => {
+           if (error) {
+              reject(error);
+              return;
+          }
+          resolve(stdout)
+         });
+     })
+ }
+}
+var os = new os_func();
+
+app.get('/getmove', async (req, res) => {
+  console.time("mula");
+  os.execCommand('mula.exe '+req.query.fen).then(r => {
+    res.send(r);
+  })
+  console.timeEnd("mula");
 });
 
 app.listen(port, () => {
