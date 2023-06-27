@@ -25,7 +25,7 @@ Matheus Laureano,
 Matheus de Mattos,
 Pedro Muniz,
 Thiago Lemos,
-Victor Patricio,
+Victor Patricio
 
 ### Controle das tarefas
 O controle das tarefas durante o projeto foi feito pelo notion, que pode ser acessado pelo link: 
