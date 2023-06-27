@@ -147,6 +147,11 @@ let pointerDown = function() {
             // animação viria aqui, eu acho
 
             moved = true;
+            if(generateNextPossiblePositions(game.FEN).length == 0) {
+                if(isKingChecked(game.FEN, game.playingAs == "w" ? "b" : "w")) alert("Você venceu!");
+                else alert("Empate por afogamento!");
+                location.reload();
+            }
         } else if(game.board[aux[0]][aux[1]] == ' ' || (aux[0] == selectedPiece[0] && aux[1] == selectedPiece[1])) {
             selectedPiece = [-1, -1];
             selectedPieceName = ' ';
@@ -169,6 +174,12 @@ let pointerDown = function() {
                         await animatePiece(temp_board, vals[0], vals[1], vals[2]);
                         redraw(game.board);
                         moved = false;
+                        
+                        if(generateNextPossiblePositions(game.FEN).length == 0) {
+                            if(isKingChecked(game.FEN, game.playingAs)) alert("Você perdeu!");
+                            else alert("Empate por afogamento!");
+                            location.reload()
+                        }
                     }
                 };
             }
