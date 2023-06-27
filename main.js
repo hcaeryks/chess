@@ -24,7 +24,7 @@ var os = new os_func();
 
 app.get('/getmove', async (req, res) => {
   console.time("mula");
-  os.execCommand('./mula.exe '+req.query.fen).then(r => {
+  os.execCommand(process.platform === "win32" ? 'mula.exe '+req.query.fen : './mula.exe '+req.query.fen).then(r => {
     res.send(r);
   });
   console.timeEnd("mula");
