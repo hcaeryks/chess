@@ -20,12 +20,12 @@ npm start
 Ao executar o programa, você será apresentado à interface do jogo de Xadrez. A jogabilidade seguirá as regras convencionais do Xadrez.
 
 ### Autores
-Bernardo Gallo
-Matheus Laureano
-Matheus de Mattos
-Pedro Muniz
-Thiago Lemos
-Victor Patricio
+Bernardo Gallo,
+Matheus Laureano,
+Matheus de Mattos,
+Pedro Muniz,
+Thiago Lemos,
+Victor Patricio,
 
 ### Controle das tarefas
 O controle das tarefas durante o projeto foi feito pelo notion, que pode ser acessado pelo link: 
