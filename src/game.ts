@@ -35,22 +35,67 @@ class Game {
     }
 
     public AImakeMove(move: string) {
+        let promoting: boolean = false;
+        let piecePromo: string = '';
+        if(move.length == 5) {
+            promoting = true;
+            piecePromo = move.charAt(4);
+            this.next == "w" ? piecePromo = piecePromo.toUpperCase() : piecePromo = piecePromo.toLowerCase();
+        }
         let file: string[] = ["a", "b", "c", "d", "e", "f", "g", "h"];
         let start: number[] = [8-parseInt(move.charAt(1)), file.indexOf(move.charAt(0))]
         let end: number[] = [8-parseInt(move.charAt(3)), file.indexOf(move.charAt(2))]
         let piece: string = this.board[start[0]][start[1]];
-        this.board[end[0]][end[1]] = piece;
+        let color: string = getPieceColor(piece);
+        if(promoting) this.board[end[0]][end[1]] = piecePromo;
+        else this.board[end[0]][end[1]] = piece;
         this.board[start[0]][start[1]] = ' ';
-        this.fullMoveClock++;
+        
+        if(piece.toUpperCase() == "K") {
+            if(start[1] - end[1] == 2) {
+                this.board[start[0]][0] = ' ';
+                this.board[start[0]][end[1]+1] = color == "w" ? "R" : "r";
+            }
+            if(start[1] - end[1] == -2) {
+                this.board[start[0]][7] = ' ';
+                this.board[start[0]][end[1]-1] = color == "w" ? "R" : "r";
+            }
+            if(color == "w") { this.whiteKingRook = 0; this.whiteQueenRook = 0; }
+            else if(color == "b") { this.blackKingRook = 0; this.blackQueenRook = 0; }
+        } else if (piece == "R") {
+            if(start[0] == 7 && start[1] == 7) this.whiteKingRook = 0; 
+            if(start[0] == 7 && start[1] == 0) this.whiteQueenRook = 0; 
+            if(start[0] == 0 && start[1] == 0) this.blackQueenRook = 0; 
+            if(start[0] == 0 && start[1] == 7) this.blackKingRook = 0; 
+        }
+        let castling = "";
         this.next = this.next == "w" ? "b" : "w";
-        console.log(piece, start, end, move);
+        if(this.whiteKingRook) castling += "K";
+        if(this.whiteQueenRook) castling += "Q";
+        if(this.blackKingRook) castling += "k";
+        if(this.blackQueenRook) castling += "q"
+        if(castling == "") castling = "-";
+        this.fullMoveClock++;
+        this.FENvalue = ArrayToFEN(this.board) + " " + this.next + " " + castling + " " + "-"/*enpassant*/ + " " + this.halfMoveClock + " " + this.fullMoveClock;
+        this.FEN = new StructFEN(this.FENvalue);
         return [piece, start, end];
     }
 
     public makeMove(move: Move) {
         let color = getPieceColor(move.piece);
         let piece: string = move.piece.toUpperCase();
+        this.board[move.location[0]][move.location[1]] = ' ';
+        this.board[move.futureLocation[0]][move.futureLocation[1]] = move.piece;
+        this.next = this.next == "w" ? "b" : "w";
         if(piece == "K") {
+            if(move.location[1] - move.futureLocation[1] == 2) {
+                this.board[move.location[0]][0] = ' ';
+                this.board[move.location[0]][move.futureLocation[1]+1] = color == "w" ? "R" : "r";
+            }
+            if(move.location[1] - move.futureLocation[1] == -2) {
+                this.board[move.location[0]][7] = ' ';
+                this.board[move.location[0]][move.futureLocation[1]-1] = color == "w" ? "R" : "r";
+            }
             if(color == "w") { this.whiteKingRook = 0; this.whiteQueenRook = 0; }
             else if(color == "b") { this.blackKingRook = 0; this.blackQueenRook = 0; }
         } else if (piece == "R") {
@@ -58,10 +103,10 @@ class Game {
             if(move.location[0] == 7 && move.location[1] == 0) this.whiteQueenRook = 0; 
             if(move.location[0] == 0 && move.location[1] == 0) this.blackQueenRook = 0; 
             if(move.location[0] == 0 && move.location[1] == 7) this.blackKingRook = 0; 
+        } else if (piece == "P") {
+            if(color == "w" && move.futureLocation[0] == 0) this.board[move.futureLocation[0]][move.futureLocation[1]] = "Q"
+            else if(color == "b" && move.futureLocation[0] == 7) this.board[move.futureLocation[0]][move.futureLocation[1]] = "q";
         }
-        this.board[move.location[0]][move.location[1]] = ' ';
-        this.board[move.futureLocation[0]][move.futureLocation[1]] = move.piece;
-        this.next = this.next == "w" ? "b" : "w";
 
         let castling = "";
         if(this.whiteKingRook) castling += "K";
@@ -92,7 +137,7 @@ class StructFEN {
     public value: string;
     public placement: string;
     public next: string;
-    public castling: string;
+    public castling: string = "";
     public enpassant: string;
     public halfmove: number;
     public fullmove: number;
@@ -106,6 +151,8 @@ class StructFEN {
         this.enpassant = params[3];
         this.halfmove = parseInt(params[4]);
         this.fullmove = parseInt(params[5]);
+
+        if(this.castling == null) this.castling = "";
     }
 }
 
@@ -113,6 +160,7 @@ class Move {
     public piece: string;
     public location: number[];
     public futureLocation: number[];
+    public promoPiece: string = '';
 
     constructor(piece: string, location: number[], futureLocation: number[]) {
         this.piece = piece;
@@ -321,7 +369,7 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
                 unverified_moves.push([location[0]-1, location[1]+1]);
                 unverified_moves.push([location[0]-1, location[1]]);
                 unverified_moves.push([location[0]-1, location[1]-1]);
-                /*if(color == "w") {
+                if(color == "w") {
                     if(board[7][1] == ' ' && board[7][2] == ' ' && board[7][3] == ' ' && FEN.castling.includes("Q")) {
                         unverified_moves.push([7,2]);
                     }
@@ -335,7 +383,7 @@ function generatePossibleMovesForPiece(FEN: StructFEN, board: string[][], locati
                     if(board[0][5] == ' ' && board[0][6] == ' ' && FEN.castling.includes("k")) {
                         unverified_moves.push([0,6]);
                     }
-                }*/
+                }
                 break;
             case 'P':
                 // TODO: programar en passant e promoção

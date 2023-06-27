@@ -1,4 +1,10 @@
-let game = new Game("w");
+let game;
+if (confirm("Deseja jogar com as peças brancas?")) {
+    game = new Game("w");
+  } else {
+    game = new Game("b");
+}
+let depth = window.name == '' ? 1 : window.name;
 const canvas = document.getElementById("board");
 const canvasLeft = canvas.offsetLeft + canvas.clientLeft;
 const canvasTop = canvas.offsetTop + canvas.clientTop;
@@ -31,9 +37,17 @@ Promise.all(proms).then(data=>{
     if(game.playingAs == "b") {
         setTimeout(async function() {
             let temp_board = game.board;
-            let vals = game.AImakeMove(getNextPosition(game.FEN, 3));
-            await animatePiece(temp_board, vals[0], vals[1], vals[2]);
-            redraw(game.board);
+                const xhr = new XMLHttpRequest();
+                    xhr.open("GET", "http://localhost:3000/getmove?fen=\"" + game.FENvalue + '\" '+depth);
+                    xhr.send();
+                    xhr.onload = async () => {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        let vals = game.AImakeMove(xhr.response);
+                        await animatePiece(temp_board, vals[0], vals[1], vals[2]);
+                        redraw(game.board);
+                        moved = false;
+                    }
+                };
         }, 10);
     }
 })
@@ -133,7 +147,6 @@ let pointerDown = function() {
             // animação viria aqui, eu acho
 
             moved = true;
-            if(generateNextPossiblePositions(game.FEN).length == 0) alert("Você venceu!")
         } else if(game.board[aux[0]][aux[1]] == ' ' || (aux[0] == selectedPiece[0] && aux[1] == selectedPiece[1])) {
             selectedPiece = [-1, -1];
             selectedPieceName = ' ';
@@ -148,7 +161,7 @@ let pointerDown = function() {
             if(moved) {
                 let temp_board = game.board;
                 const xhr = new XMLHttpRequest();
-                    xhr.open("GET", "http://localhost:3000/getmove?fen=" + game.FENvalue);
+                    xhr.open("GET", "http://localhost:3000/getmove?fen=\"" + game.FENvalue + '\" '+depth);
                     xhr.send();
                     xhr.onload = async () => {
                     if (xhr.readyState == 4 && xhr.status == 200) {
@@ -156,7 +169,6 @@ let pointerDown = function() {
                         await animatePiece(temp_board, vals[0], vals[1], vals[2]);
                         redraw(game.board);
                         moved = false;
-                        if(generateNextPossiblePositions(game.FEN).length == 0) alert("Você perdeu!")
                     }
                 };
             }
