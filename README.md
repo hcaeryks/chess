@@ -1,4 +1,7 @@
 ### Grupo 8 - XADREZ
+
+![image](https://github.com/hcaeryks/chess/assets/51766227/29ce8125-7bca-4b5d-899c-82d4aec1e73e)
+
 Repositório do projeto de Xadrez do grupo 8 para a disciplina Engenharia de Software 2.
 
 ### Descrição do Projeto e Recursos
